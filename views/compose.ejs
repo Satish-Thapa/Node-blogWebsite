@@ -1,0 +1,19 @@
+<%- include("partials/header") -%>
+<h1>Compose</h1>
+
+
+
+
+<form action="/compose" method="post">
+    <h2>Title</h2>
+    <div class="input-group flex-nowrap input-group-lg">
+        <input type="text" name="postTitle" class="form-control" placeholder="Title" aria-label="Username" aria-describedby="addon-wrapping">
+      </div>
+    <h2>Post</h2>
+      <div class="input-group flex-nowrap input-group-lg blog">
+        <textarea  class="form-control" name="postBody" rows="50" cols="50" placeholder="Your Blog"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Publish</button>
+</form>
+
+<%- include("partials/footer") -%>
