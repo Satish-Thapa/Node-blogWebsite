@@ -22,10 +22,10 @@ const contactContent = "Scelerisque eleifend donec pretium vulputate sapien. Rho
 
 const blogSchema = new mongoose.Schema({
   name: String,
-  blog : String
+  blog: String
 });
 
-const Blog = mongoose.model("Blod",blogSchema);
+const Blog = mongoose.model("Blod", blogSchema);
 
 const blog1 = new Blog({
   name: "home",
@@ -33,8 +33,6 @@ const blog1 = new Blog({
 });
 
 // blog1.save();
-
-let contents = [blog1];
 
 // Blog.insertMany([contents],function(err){
 //   if(!err){
@@ -50,72 +48,100 @@ const app = express();
 
 app.set('view engine', 'ejs');
 
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
+let compBlog = [];
 
-app.get("/",function(req,res){
-  var homeBlog = "";
-  Blog.find(function(err,result){
-    console.log("aani ma bhaye");
-    if(!err){
+
+app.get("/", function (req, res) {
+  let homeBlog = "";
+  Blog.find(function (err, result) {
+    if (!err) {
       homeBlog = result[0].blog;
-      console.log(homeBlog);
-      res.render("home",{homeStartingContent: homeBlog, contents:contents});
+      console.log(compBlog + " First compBlog");
+      res.render("home", { homeStartingContent: homeBlog, contents: compBlog });
     } else {
       console.log(err);
-  
+
     }
 
   });
- 
-  
+
+
 });
 
-app.get("/about",function(req,res){
-  res.render("about",{aboutContent:aboutContent});
+app.get("/about", function (req, res) {
+  res.render("about", { aboutContent: aboutContent });
 });
 
-app.get("/contact",function(req,res){
-  res.render("contact",{contactContent:contactContent});
+app.get("/contact", function (req, res) {
+  res.render("contact", { contactContent: contactContent });
 });
 
-app.get("/posts/:day",function(req,res){
- 
-  let para = _.lowerCase( req.params.day);
-  contents.forEach(function(item){
-      if(para == _.lowerCase(item.title)){
-        res.render("post",{head:item.title,post: item.blog});
-      }else{
-        console.log("match not found");
-      }
+app.get("/posts/:day", function (req, res) {
+
+  let para = _.lowerCase(req.params.day);
+  compBlog.forEach(function (item) {
+    if (para == _.lowerCase(item.title)) {
+      res.render("post", { head: item.title, post: item.blog });
+    } else {
+      console.log("match not found");
+    }
   });
 });
 
 const composeSchema = new mongoose.Schema({
- title : String,
- blog : String
+  title: String,
+  blog: String
 })
 
-const Compose = mongoose.model("Compose",composeSchema);
+const Compose = mongoose.model("Compose", composeSchema);
 
-app.post("/compose",function(req,res){
-  content = {
-    
-  }
+const blogs = [];
+
+app.post("/compose", function (req, res) {
+
   const comp1 = new Compose({
     title: req.body.postTitle,
     blog: req.body.postBody
   })
-  contents.push(content);
-  res.redirect("/");
+
+
+  blogs.push(comp1);
+
+  Compose.insertMany(blogs, function (err) {
+    console.log("first");
+    if (err) {
+      console.log(err);
+    } else {
+
+      console.log("Sucesfully added Compose");
+    }
+    Compose.find(function (err, result) {
+      console.log("Second");
+      if (!err) {
+        compBlog = result;
+      } else {
+        console.log(err);
   
+      }
+  
+    });
+
+  });
+
+
+
+
+  res.redirect("/");
+
 });
-app.get("/compose",function(req,res){
+app.get("/compose", function (req, res) {
   res.render("compose");
 });
 
 
-app.listen(3000, function() {
+app.listen(3000, function () {
   console.log("Server started on port 3000");
 });
